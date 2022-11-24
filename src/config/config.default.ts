@@ -7,8 +7,40 @@ export default (appInfo: MidwayAppInfo) => {
     egg: {
       port: 7001,
     },
-    // security: {
-    //   csrf: false,
-    // },
+    security: {
+      csrf: false,
+    },
+    // jwt配置
+    jwt: {
+      secret: appInfo.name + '_1669293593767_7236',
+      expiresIn: '2d'
+    },
+    // 数据库配置
+    sequelize: {
+      dataSource: {
+        default: {
+          database: 'blogserver',
+          username: 'root',
+          password: 'root',
+          host: '127.0.0.1',
+          port: 3306,
+          encrypt: false,
+          dialect: 'mysql',
+          define: { charset: 'utf8' },
+          timezone: '+08:00',
+          // 本地的时候，可以通过 sync: true 直接 createTable
+          sync: true,
+        },
+      },
+    },
+    // redis配置
+    redis: {
+      client: {
+        port: 6379, // Redis port
+        host: "127.0.0.1", // Redis host
+        password: "",
+        db: 1,
+      },
+    }
   } as MidwayConfig;
 };

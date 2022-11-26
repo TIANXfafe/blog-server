@@ -1,4 +1,5 @@
 import { MidwayConfig, MidwayAppInfo } from '@midwayjs/core';
+import entities from '../model';
 
 export default (appInfo: MidwayAppInfo) => {
   return {
@@ -28,6 +29,7 @@ export default (appInfo: MidwayAppInfo) => {
           dialect: 'mysql',
           define: { charset: 'utf8' },
           timezone: '+08:00',
+          entities,
           // 本地的时候，可以通过 sync: true 直接 createTable
           sync: true,
         },

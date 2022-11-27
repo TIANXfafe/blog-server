@@ -11,6 +11,9 @@ import * as sequelize from '@midwayjs/sequelize';
 import * as redis from '@midwayjs/redis';
 
 import { BasicInfoMiddleware } from "./middleware/basicInfo.middleware";
+import { FormatMiddleware } from "./middleware/format.middleware";
+
+import { AllErrorFilter } from "./filter/all.filter";
 
 @Configuration({
   imports: [
@@ -29,7 +32,8 @@ export class ContainerLifeCycle implements ILifeCycle {
   app: Application;
 
   async onReady(): Promise<void> {
-    this.app.useMiddleware(BasicInfoMiddleware);
+    this.app.useMiddleware([BasicInfoMiddleware, FormatMiddleware]);
+    this.app.useFilter([AllErrorFilter]);
   }
 
 

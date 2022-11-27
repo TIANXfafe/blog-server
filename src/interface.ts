@@ -15,3 +15,10 @@ export interface CheckCaptcha {
   id: string;
   answer: string;
 }
+
+export interface Params {
+  filter?: object;
+  pageSize?: number;
+  pageNo?: number;
+  sort?: object;
+}

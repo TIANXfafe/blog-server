@@ -10,3 +10,8 @@ export interface IGetUserResponse {
   message: string;
   data: IUserOptions;
 }
+
+export interface CheckCaptcha {
+  id: string;
+  answer: string;
+}

@@ -7,7 +7,7 @@ export class AllErrorFilter {
     return {
       code: 1,
       msg: 'fail',
-      data: err.message
+      data: err.message || "系统错误，请联系管理员"
     }
   }
 }

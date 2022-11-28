@@ -1,13 +1,21 @@
-import { Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
-import { PasswrodService } from "../service/passwrod";
+import { App, Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
+import { JwtService} from "@midwayjs/jwt";
+import { PasswordService } from "../service/password";
 import { User } from "../model/user";
 import { Params } from "../interface";
+import { Application } from "@midwayjs/web";
 
 @Controller('/user')
 export class UserController {
 
+  @App()
+  app: Application;
+
   @Inject()
-  passwordService: PasswrodService
+  passwordService: PasswordService;
+
+  @Inject()
+  jwtService: JwtService;
 
   // 用户列表
   @Get('/')
@@ -111,7 +119,22 @@ export class UserController {
     @Body('phone') phone: string,
     @Body('password') password: string,
   ) {
-
+    const user: any = await User.findOne({
+      where: {
+        phone,
+        isActive: 1
+      },
+    });
+    if (!user) {
+      throw new Error("用户不存在或已被禁用!");
+    }
+    const checkPwd = this.passwordService.checkPassword(password, user.password);
+    if (!checkPwd) {
+      throw new Error("密码错误!");
+    }
+    console.log('this.app.config.jwt', this.app.config.jwt)
+    const token = await this.jwtService.sign(user, this.app.config.jwt.secret);
+    console.log('ttt', token)
     return 'User login'
   }
 

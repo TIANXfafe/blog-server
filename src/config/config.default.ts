@@ -14,7 +14,7 @@ export default (appInfo: MidwayAppInfo) => {
     // jwt配置
     jwt: {
       // 密钥
-      secret: appInfo.name + '_1669293593767_7236',
+      secret: 'dbwu7dw8aqnhdw&W*dwj)O/*',
       // 过期时间
       expiresIn: '1d'
     },
@@ -47,7 +47,7 @@ export default (appInfo: MidwayAppInfo) => {
       },
     },
     crypto: {
-      secret: appInfo.name + 'dbwu7dw8aqnhdw&W*dwj)O/*'
+      secret: appInfo.name + 'gse6wg14ef1e586146sfe'
     }
   } as MidwayConfig;
 };

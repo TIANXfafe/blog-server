@@ -3,7 +3,7 @@ import { Application } from "@midwayjs/web";
 import * as crypto from "crypto";
 
 @Provide()
-export class PasswrodService {
+export class PasswordService {
 
   @App()
   app: Application
@@ -18,7 +18,15 @@ export class PasswrodService {
       .digest('hex');
   }
 
-  async checkPassword(password: string) {
-    return 1;
+  /**
+   * 验证密码
+   * @param password 原始密码
+   * @param hashPassword 加密后密码
+   */
+  checkPassword(password: string, hashPassword: string) {
+    const hmac = crypto.createHash('sha256', this.app.config.crypto.secret)
+      .update(password)
+      .digest('hex');
+    return hmac === hashPassword;
   }
 }

@@ -45,6 +45,9 @@ export default (appInfo: MidwayAppInfo) => {
         password: "",
         db: 1,
       },
+    },
+    crypto: {
+      secret: appInfo.name + 'dbwu7dw8aqnhdw&W*dwj)O/*'
     }
   } as MidwayConfig;
 };

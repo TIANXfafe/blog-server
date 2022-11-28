@@ -1,9 +1,14 @@
-import { Body, Controller, Del, Get, Post, Put } from "@midwayjs/decorator";
+import { Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
+import { PasswrodService } from "../service/passwrod";
 import { User } from "../model/user";
 import { Params } from "../interface";
 
 @Controller('/user')
 export class UserController {
+
+  @Inject()
+  passwordService: PasswrodService
+
   // 用户列表
   @Get('/')
   async list(@Body() params: Params) {
@@ -46,9 +51,9 @@ export class UserController {
   }
 
 
-  // 用户注册
-  @Post('/register')
-  async register(
+  // 用户注册(手机号)
+  @Post('/registerWithPhone')
+  async registerWithPhone(
     @Body('phone') phone: number,
     @Body('password') password: string,
     @Body('rePassword') rePassword: string,
@@ -59,22 +64,75 @@ export class UserController {
     if (await User.findOne({
       where: {phone},
     })) {
-      throw new Error("手机号已被注册，请重新输入!");
+      throw new Error("该手机号已被注册，请重新输入!");
     }
+    const hashPwd = this.passwordService.generatePassword(password);
     const user = await User.create({
       phone,
-      password
+      password: hashPwd
+    });
+    if (!user) {
+      throw new Error("创建失败，请稍后重试!");
+    }
+    delete user.password;
+    return user;
+  }
+
+  // 用户注册(邮箱)
+  @Post('/registerWithEmail')
+  async registerWithEmail(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Body('rePassword') rePassword: string,
+  ) {
+    if (password !== rePassword) {
+      throw new Error("两次密码不一致，请重新输入!");
+    }
+    if (await User.findOne({
+      where: {email},
+    })) {
+      throw new Error("该邮箱已被注册，请重新输入!");
+    }
+    const hashPwd = this.passwordService.generatePassword(password);
+    const user = await User.create({
+      email,
+      password: hashPwd
     })
     if (!user) {
       throw new Error("创建失败，请稍后重试!")
     }
+    delete user.password;
     return user;
   }
 
-  // 用户登录
-  @Post('/login')
-  async login() {
+  // 用户登录(手机号)
+  @Post('/loginWithPhone')
+  async loginWithPhone(
+    @Body('phone') phone: string,
+    @Body('password') password: string,
+  ) {
+
     return 'User login'
+  }
+
+  // 用户登录(手机号)
+  @Post('/loginWithEmail')
+  async loginWithEmail(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    return 'User login'
+
+  }
+
+  // 用户登录(账号)
+  @Post('/loginWithAccount')
+  async loginWithAccount(
+    @Body('account') account: string,
+    @Body('password') password: string,
+  ) {
+    return 'User login'
+
   }
 
   // 用户登出

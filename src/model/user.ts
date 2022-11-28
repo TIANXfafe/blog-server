@@ -69,7 +69,7 @@ export class User extends Model {
   address: string;
 
   @Column({
-    comment: '出生日期'
+    comment: "出生日期"
   })
   birthday: number;
 
@@ -80,7 +80,7 @@ export class User extends Model {
   isSuperAdmin: boolean;
 
   @Column({
-    defaultValue: false,
+    defaultValue: true,
     comment: "是否激活"
   })
   isActive: boolean;

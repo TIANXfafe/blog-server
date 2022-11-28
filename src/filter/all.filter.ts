@@ -4,6 +4,7 @@ import { Context } from "egg";
 @Catch()
 export class AllErrorFilter {
   async catch(err: Error, ctx: Context) {
+    ctx.status = 500;
     return {
       code: 1,
       msg: 'fail',

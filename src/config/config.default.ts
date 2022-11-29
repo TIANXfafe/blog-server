@@ -14,9 +14,9 @@ export default (appInfo: MidwayAppInfo) => {
     // jwt配置
     jwt: {
       // 密钥
-      secret: 'dbwu7dw8aqnhdw&W*dwj)O/*',
+      secret: 'dw1a65d6a1w',
       // 过期时间
-      expiresIn: '1d'
+      expiresIn: "2d"
     },
     // 数据库配置
     sequelize: {

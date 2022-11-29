@@ -1,5 +1,5 @@
 import { App, Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
-import { JwtService} from "@midwayjs/jwt";
+import { JwtService } from "@midwayjs/jwt";
 import { PasswordService } from "../service/password";
 import { User } from "../model/user";
 import { Params } from "../interface";
@@ -119,7 +119,8 @@ export class UserController {
     @Body('phone') phone: string,
     @Body('password') password: string,
   ) {
-    const user: any = await User.findOne({
+    const {secret, expiresIn} = this.app.config.jwt
+    let user: any = await User.findOne({
       where: {
         phone,
         isActive: 1
@@ -132,10 +133,10 @@ export class UserController {
     if (!checkPwd) {
       throw new Error("密码错误!");
     }
-    console.log('this.app.config.jwt', this.app.config.jwt)
-    const token = await this.jwtService.sign(user, this.app.config.jwt.secret);
-    console.log('ttt', token)
-    return 'User login'
+    user = JSON.parse(JSON.stringify(user));
+    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
+    delete user.password;
+    return user;
   }
 
   // 用户登录(手机号)
@@ -144,8 +145,25 @@ export class UserController {
     @Body('email') email: string,
     @Body('password') password: string,
   ) {
-    return 'User login'
-
+    const {secret, expiresIn} = this.app.config.jwt
+    console.table({secret, expiresIn})
+    let user: any = await User.findOne({
+      where: {
+        email,
+        isActive: 1
+      },
+    });
+    if (!user) {
+      throw new Error("用户不存在或已被禁用!");
+    }
+    const checkPwd = this.passwordService.checkPassword(password, user.password);
+    if (!checkPwd) {
+      throw new Error("密码错误!");
+    }
+    user = JSON.parse(JSON.stringify(user));
+    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
+    delete user.password;
+    return user;
   }
 
   // 用户登录(账号)
@@ -154,8 +172,25 @@ export class UserController {
     @Body('account') account: string,
     @Body('password') password: string,
   ) {
-    return 'User login'
-
+    const {secret, expiresIn} = this.app.config.jwt
+    console.table({secret, expiresIn})
+    let user: any = await User.findOne({
+      where: {
+        account,
+        isActive: 1
+      },
+    });
+    if (!user) {
+      throw new Error("用户不存在或已被禁用!");
+    }
+    const checkPwd = this.passwordService.checkPassword(password, user.password);
+    if (!checkPwd) {
+      throw new Error("密码错误!");
+    }
+    user = JSON.parse(JSON.stringify(user));
+    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
+    delete user.password;
+    return user;
   }
 
   // 用户登出

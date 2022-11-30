@@ -1,15 +1,19 @@
 import { App, Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
-import { JwtService } from "@midwayjs/jwt";
-import { PasswordService } from "../service/password";
-import { User } from "../model/user";
-import { Params } from "../interface";
 import { Application } from "@midwayjs/web";
+import { JwtService } from "@midwayjs/jwt";
+import { User } from "../model/user";
+import { AccountService } from "../service/account";
+import { PasswordService } from "../service/password";
+import { LoginInfo, RegisterInfo, Params } from "../interface";
 
 @Controller('/user')
 export class UserController {
 
   @App()
   app: Application;
+
+  @Inject()
+  accountService: AccountService;
 
   @Inject()
   passwordService: PasswordService;
@@ -20,8 +24,8 @@ export class UserController {
   // 用户列表
   @Get('/')
   async list(@Body() params: Params) {
-    const { filter, sort, pageSize=20, pageNo=1 } = params;
-    console.table({filter, sort, pageSize, pageNo})
+    const { filter, sort, pageSize = 20, pageNo = 1 } = params;
+    console.table({ filter, sort, pageSize, pageNo })
     const userList = await User.findAndCountAll({
       attributes: { exclude: [ 'password', 'deletedAt' ] },
       limit: pageSize,
@@ -59,138 +63,36 @@ export class UserController {
   }
 
 
-  // 用户注册(手机号)
-  @Post('/registerWithPhone')
-  async registerWithPhone(
-    @Body('phone') phone: number,
-    @Body('password') password: string,
-    @Body('rePassword') rePassword: string,
-  ) {
-    if (password !== rePassword) {
-      throw new Error("两次密码不一致，请重新输入!");
-    }
-    if (await User.findOne({
-      where: {phone},
-    })) {
-      throw new Error("该手机号已被注册，请重新输入!");
-    }
-    const hashPwd = this.passwordService.generatePassword(password);
-    const user = await User.create({
+  /**
+   * 用户注册
+   * @param registerInfo 注册信息
+   */
+  @Post('/register')
+  async registerWithPhone(@Body() registerInfo: RegisterInfo) {
+    const { type, phone, email, password, rePassword } = registerInfo;
+    return await this.accountService.register({
+      type,
       phone,
-      password: hashPwd
-    });
-    if (!user) {
-      throw new Error("创建失败，请稍后重试!");
-    }
-    delete user.password;
-    return user;
-  }
-
-  // 用户注册(邮箱)
-  @Post('/registerWithEmail')
-  async registerWithEmail(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('rePassword') rePassword: string,
-  ) {
-    if (password !== rePassword) {
-      throw new Error("两次密码不一致，请重新输入!");
-    }
-    if (await User.findOne({
-      where: {email},
-    })) {
-      throw new Error("该邮箱已被注册，请重新输入!");
-    }
-    const hashPwd = this.passwordService.generatePassword(password);
-    const user = await User.create({
       email,
-      password: hashPwd
-    })
-    if (!user) {
-      throw new Error("创建失败，请稍后重试!")
-    }
-    delete user.password;
-    return user;
+      password,
+      rePassword
+    });
   }
 
-  // 用户登录(手机号)
-  @Post('/loginWithPhone')
-  async loginWithPhone(
-    @Body('phone') phone: string,
-    @Body('password') password: string,
-  ) {
-    const {secret, expiresIn} = this.app.config.jwt
-    let user: any = await User.findOne({
-      where: {
-        phone,
-        isActive: 1
-      },
+  /**
+   * 用户登录
+   * @param loginInfo 登录信息
+   */
+  @Post('/login')
+  async loginWithPhone(@Body() loginInfo: LoginInfo) {
+    const { type, phone, email, account, password } = loginInfo;
+    return await this.accountService.login({
+      type,
+      phone,
+      email,
+      account,
+      password
     });
-    if (!user) {
-      throw new Error("用户不存在或已被禁用!");
-    }
-    const checkPwd = this.passwordService.checkPassword(password, user.password);
-    if (!checkPwd) {
-      throw new Error("密码错误!");
-    }
-    user = JSON.parse(JSON.stringify(user));
-    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
-    delete user.password;
-    return user;
-  }
-
-  // 用户登录(手机号)
-  @Post('/loginWithEmail')
-  async loginWithEmail(
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    const {secret, expiresIn} = this.app.config.jwt
-    console.table({secret, expiresIn})
-    let user: any = await User.findOne({
-      where: {
-        email,
-        isActive: 1
-      },
-    });
-    if (!user) {
-      throw new Error("用户不存在或已被禁用!");
-    }
-    const checkPwd = this.passwordService.checkPassword(password, user.password);
-    if (!checkPwd) {
-      throw new Error("密码错误!");
-    }
-    user = JSON.parse(JSON.stringify(user));
-    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
-    delete user.password;
-    return user;
-  }
-
-  // 用户登录(账号)
-  @Post('/loginWithAccount')
-  async loginWithAccount(
-    @Body('account') account: string,
-    @Body('password') password: string,
-  ) {
-    const {secret, expiresIn} = this.app.config.jwt
-    console.table({secret, expiresIn})
-    let user: any = await User.findOne({
-      where: {
-        account,
-        isActive: 1
-      },
-    });
-    if (!user) {
-      throw new Error("用户不存在或已被禁用!");
-    }
-    const checkPwd = this.passwordService.checkPassword(password, user.password);
-    if (!checkPwd) {
-      throw new Error("密码错误!");
-    }
-    user = JSON.parse(JSON.stringify(user));
-    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
-    delete user.password;
-    return user;
   }
 
   // 用户登出

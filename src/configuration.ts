@@ -10,7 +10,7 @@ import * as captcha from '@midwayjs/captcha';
 import * as sequelize from '@midwayjs/sequelize';
 import * as redis from '@midwayjs/redis';
 
-import { BasicInfoMiddleware } from "./middleware/basicInfo.middleware";
+import { AuthMiddleware } from "./middleware/auth.middleware";
 import { FormatMiddleware } from "./middleware/format.middleware";
 
 import { AllErrorFilter } from "./filter/all.filter";
@@ -32,7 +32,7 @@ export class ContainerLifeCycle implements ILifeCycle {
   app: Application;
 
   async onReady(): Promise<void> {
-    this.app.useMiddleware([BasicInfoMiddleware, FormatMiddleware]);
+    this.app.useMiddleware([FormatMiddleware, AuthMiddleware]);
     this.app.useFilter([AllErrorFilter]);
   }
 

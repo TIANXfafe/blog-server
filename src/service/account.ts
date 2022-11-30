@@ -98,7 +98,7 @@ export class AccountService {
     const token = await this.jwtService.sign({ user }, secret, { expiresIn });
     user.token = token;
     delete user.password;
-    if (!await this.operateRedisService.set(`user_${user.id}`, token)) {
+    if(!await this.operateRedisService.set(`user_${ user.id }`, token, 60 * 60 * 24 * 2)) {
       throw new Error('登录失败，请稍后重试!')
     }
     return user;

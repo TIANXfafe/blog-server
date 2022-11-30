@@ -4,6 +4,7 @@ import { JwtService } from "@midwayjs/jwt";
 import { User } from "../model/user";
 import { PasswordService } from "./password";
 import { RegisterInfo, LoginInfo } from "../interface";
+import { OperateRedisService } from "./operateRedis";
 
 @Provide()
 export class AccountService {
@@ -15,6 +16,9 @@ export class AccountService {
 
   @Inject()
   passwordService: PasswordService;
+
+  @Inject()
+  operateRedisService: OperateRedisService;
 
   /**
    * 注册
@@ -91,8 +95,12 @@ export class AccountService {
       throw new Error("密码错误!");
     }
     user = JSON.parse(JSON.stringify(user));
-    user.token = await this.jwtService.sign({ user }, secret, { expiresIn });
+    const token = await this.jwtService.sign({ user }, secret, { expiresIn });
+    user.token = token;
     delete user.password;
+    if (!await this.operateRedisService.set(`user_${user.id}`, token)) {
+      throw new Error('登录失败，请稍后重试!')
+    }
     return user;
   }
 }

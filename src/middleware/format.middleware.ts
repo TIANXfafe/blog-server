@@ -1,6 +1,6 @@
-import { IMiddleware } from "@midwayjs/core";
-import { Middleware } from "@midwayjs/decorator";
-import { NextFunction, Context } from "@midwayjs/web";
+import { IMiddleware } from '@midwayjs/core';
+import { Middleware } from '@midwayjs/decorator';
+import { NextFunction, Context } from '@midwayjs/web';
 
 @Middleware()
 export class FormatMiddleware implements IMiddleware<Context, NextFunction> {
@@ -13,8 +13,8 @@ export class FormatMiddleware implements IMiddleware<Context, NextFunction> {
       return {
         code: 0,
         msg: 'ok',
-        data: result
-      }
+        data: result,
+      };
     };
   }
 

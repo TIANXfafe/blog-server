@@ -1,14 +1,22 @@
-import { App, Body, Controller, Del, Get, Inject, Post, Put } from "@midwayjs/decorator";
-import { Application } from "@midwayjs/web";
-import { JwtService } from "@midwayjs/jwt";
-import { User } from "../model/user";
-import { AccountService } from "../service/account";
-import { PasswordService } from "../service/password";
-import { LoginInfo, RegisterInfo, Params } from "../interface";
+import {
+  App,
+  Body,
+  Controller,
+  Del,
+  Get,
+  Inject,
+  Post,
+  Put,
+} from '@midwayjs/decorator';
+import { Application } from '@midwayjs/web';
+import { JwtService } from '@midwayjs/jwt';
+import { User } from '../model/user';
+import { AccountService } from '../service/account';
+import { PasswordService } from '../service/password';
+import { LoginInfo, RegisterInfo, Params } from '../interface';
 
 @Controller('/user')
 export class UserController {
-
   @App()
   app: Application;
 
@@ -25,23 +33,23 @@ export class UserController {
   @Get('/')
   async list(@Body() params: Params) {
     const { filter, sort, pageSize = 20, pageNo = 1 } = params;
-    console.table({ filter, sort, pageSize, pageNo })
+    console.table({ filter, sort, pageSize, pageNo });
     const userList = await User.findAndCountAll({
-      attributes: { exclude: [ 'password', 'deletedAt' ] },
+      attributes: { exclude: ['password', 'deletedAt'] },
       limit: pageSize,
-      offset: (pageNo - 1)
-    })
+      offset: pageNo - 1,
+    });
     return {
       pageNo,
       pageSize,
-      ...userList
+      ...userList,
     };
   }
 
   // 新增用户
   @Put('/')
   async create() {
-    return 'user create'
+    return 'user create';
   }
 
   // 删除用户
@@ -62,7 +70,6 @@ export class UserController {
     return 'user retirve';
   }
 
-
   /**
    * 用户注册
    * @param registerInfo 注册信息
@@ -75,7 +82,7 @@ export class UserController {
       phone,
       email,
       password,
-      rePassword
+      rePassword,
     });
   }
 
@@ -91,13 +98,13 @@ export class UserController {
       phone,
       email,
       account,
-      password
+      password,
     });
   }
 
   // 用户登出
   @Post('/logout')
   async logout() {
-    return 'User logout'
+    return 'User logout';
   }
 }

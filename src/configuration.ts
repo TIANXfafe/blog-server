@@ -10,21 +10,13 @@ import * as captcha from '@midwayjs/captcha';
 import * as sequelize from '@midwayjs/sequelize';
 import * as redis from '@midwayjs/redis';
 
-import { AuthMiddleware } from "./middleware/auth.middleware";
-import { FormatMiddleware } from "./middleware/format.middleware";
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { FormatMiddleware } from './middleware/format.middleware';
 
-import { AllErrorFilter } from "./filter/all.filter";
+import { AllErrorFilter } from './filter/all.filter';
 
 @Configuration({
-  imports: [
-    egg,
-    validate,
-    swagger,
-    jwt,
-    captcha,
-    sequelize,
-    redis
-  ],
+  imports: [egg, validate, swagger, jwt, captcha, sequelize, redis],
   importConfigs: [join(__dirname, './config')],
 })
 export class ContainerLifeCycle implements ILifeCycle {
@@ -36,7 +28,5 @@ export class ContainerLifeCycle implements ILifeCycle {
     this.app.useFilter([AllErrorFilter]);
   }
 
-
-  async onStop(): Promise<void> {
-  }
+  async onStop(): Promise<void> {}
 }

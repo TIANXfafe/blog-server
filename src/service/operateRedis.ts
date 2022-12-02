@@ -1,5 +1,5 @@
-import { Inject, Provide } from "@midwayjs/decorator";
-import { RedisService } from "@midwayjs/redis";
+import { Inject, Provide } from '@midwayjs/decorator';
+import { RedisService } from '@midwayjs/redis';
 
 @Provide()
 export class OperateRedisService {
@@ -15,10 +15,10 @@ export class OperateRedisService {
    */
   async set(key: string, value: string, expiration = 0) {
     let res;
-    if(expiration === 0) {
+    if (expiration === 0) {
       res = await this.redisService.set(key, value);
     } else {
-      res = await this.redisService.set(key, value, 'EX', expiration)
+      res = await this.redisService.set(key, value, 'EX', expiration);
     }
     return res;
   }

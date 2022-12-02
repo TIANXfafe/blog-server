@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Inject } from "@midwayjs/decorator";
-import { CaptchaService } from "@midwayjs/captcha";
-import { CheckCaptcha } from "../interface";
+import { Controller, Get, Post, Body, Inject } from '@midwayjs/decorator';
+import { CaptchaService } from '@midwayjs/captcha';
+import { CheckCaptcha } from '../interface';
 
 @Controller('/captcha')
 export class CommonController {
@@ -10,7 +10,10 @@ export class CommonController {
   // 获取图像验证码
   @Get('/')
   async getImageCaptcha() {
-    const { id, imageBase64 } = await this.captchaService.image({ width: 120, height: 40 });
+    const { id, imageBase64 } = await this.captchaService.image({
+      width: 120,
+      height: 40,
+    });
     return { id, imageBase64 };
   }
 
@@ -21,7 +24,7 @@ export class CommonController {
     return {
       id,
       imageBase64,
-    }
+    };
   }
 
   // 验证验证码是否正确
